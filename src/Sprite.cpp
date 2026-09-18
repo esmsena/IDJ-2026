@@ -1,8 +1,7 @@
 #include "Sprite.h"
 
-#include <iostream>
-
 #include "Game.h"
+#include "Resources.h"
 
 Sprite::Sprite()
     : texture(nullptr), width(0), height(0), clipRect({0, 0, 0, 0}),
@@ -15,37 +14,18 @@ Sprite::Sprite(const std::string& file, int frameCountW, int frameCountH)
 }
 
 void Sprite::Open(const std::string& file) {
-    if (texture != nullptr) {
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
-    }
-
     width = 0;
     height = 0;
     clipRect = {0, 0, 0, 0};
 
-    SDL_Renderer* renderer = Game::GetInstance().GetRenderer();
-    texture = IMG_LoadTexture(renderer, file.c_str());
-
-    if (texture == nullptr && file.rfind("Recursos/", 0) != 0) {
-        texture = IMG_LoadTexture(renderer, ("Recursos/" + file).c_str());
-    }
-
-    if (texture == nullptr) {
-        std::cerr << "Nao foi possivel carregar a imagem '" << file
-                  << "': " << IMG_GetError() << '\n';
-        return;
-    }
+    texture = Resources::GetImage(file);
+    if (texture == nullptr) return;
 
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
     SetFrame(0);
 }
 
-Sprite::~Sprite() {
-    if (texture != nullptr) {
-        SDL_DestroyTexture(texture);
-    }
-}
+Sprite::~Sprite() = default;
 
 void Sprite::Render(int x, int y, int w, int h) const {
     if (texture == nullptr) {

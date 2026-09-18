@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include "State.h"
+#include "Resources.h"
 
 Game* Game::instance = nullptr;
 
@@ -34,6 +35,7 @@ Game::Game(const std::string& title, int width, int height)
     if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) != 0) {
         throw std::runtime_error(std::string("Erro ao iniciar SDL_mixer: ") + Mix_GetError());
     }
+    Mix_AllocateChannels(32);
 
     window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED, width, height, 0);
@@ -73,4 +75,8 @@ void Game::Run() {
         SDL_RenderPresent(renderer);
         SDL_Delay(33);
     }
+
+    Resources::ClearImages();
+    Resources::ClearMusics();
+    Resources::ClearSounds();
 }

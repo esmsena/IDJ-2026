@@ -2,22 +2,11 @@
 
 #include <iostream>
 
-Music::Music(const std::string& file) : music(Mix_LoadMUS(file.c_str())) {
-    if (music == nullptr && file.rfind("Recursos/", 0) != 0) {
-        music = Mix_LoadMUS(("Recursos/" + file).c_str());
-    }
+#include "Resources.h"
 
-    if (music == nullptr) {
-        std::cerr << "Nao foi possivel carregar a musica '" << file
-                  << "': " << Mix_GetError() << '\n';
-    }
-}
+Music::Music(const std::string& file) : music(Resources::GetMusic(file)) {}
 
-Music::~Music() {
-    if (music != nullptr) {
-        Mix_FreeMusic(music);
-    }
-}
+Music::~Music() = default;
 
 void Music::Play(int times) const {
     if (music != nullptr && Mix_PlayMusic(music, times) == -1) {

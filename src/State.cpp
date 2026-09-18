@@ -2,6 +2,8 @@
 
 #include "GameObject.h"
 #include "SpriteRenderer.h"
+#include "TileMap.h"
+#include "TileSet.h"
 #include "Zombie.h"
 
 State::State()
@@ -12,6 +14,11 @@ State::State()
     auto* background = new GameObject();
     background->AddComponent(new SpriteRenderer(*background, "img/Background.png"));
     AddObject(background);
+
+    auto* map = new GameObject();
+    map->AddComponent(new TileMap(*map, "map/map.txt",
+                                  new TileSet(64, 64, "img/Tileset.png")));
+    AddObject(map);
 
     auto* zombie = new GameObject();
     zombie->AddComponent(new Zombie(*zombie));
