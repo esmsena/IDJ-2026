@@ -14,6 +14,7 @@ public:
     ~Game();
 
     SDL_Renderer* GetRenderer() const;
+    State& GetState() const;
     void Run();
 
     Game(const Game&) = delete;

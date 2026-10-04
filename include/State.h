@@ -13,6 +13,7 @@ public:
     State();
     ~State();
 
+    void LoadAssets();
     void Update(float dt);
     void Render() const;
     bool QuitRequested() const;
@@ -22,7 +23,7 @@ public:
     State& operator=(const State&) = delete;
 
 private:
-    Music* music;
+    Music music;
     bool quitRequested;
     std::vector<std::unique_ptr<GameObject>> objectArray;
 };

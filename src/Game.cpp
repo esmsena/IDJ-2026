@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include <cstdlib>
+#include <iostream>
 #include <stdexcept>
 
 #include "State.h"
@@ -22,14 +23,23 @@ Game& Game::GetInstance(const std::string& title, int width, int height) {
 
 Game::Game(const std::string& title, int width, int height)
     : window(nullptr), renderer(nullptr), state(nullptr) {
+    if (instance != nullptr) {
+        throw std::logic_error("Ja existe uma instancia de Game em execucao.");
+    }
     instance = this;
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
         throw std::runtime_error(std::string("Erro ao iniciar SDL: ") + SDL_GetError());
     }
 
     if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
         throw std::runtime_error(std::string("Erro ao iniciar SDL_image: ") + IMG_GetError());
+    }
+
+    const int mixFlags = MIX_INIT_OGG | MIX_INIT_MP3;
+    if ((Mix_Init(mixFlags) & mixFlags) != mixFlags) {
+        std::cerr << "Aviso: nem todos os decoders da SDL_mixer foram carregados: "
+                  << Mix_GetError() << '\n';
     }
 
     if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) != 0) {
@@ -56,15 +66,20 @@ Game::Game(const std::string& title, int width, int height)
 
 Game::~Game() {
     delete state;
+    Mix_CloseAudio();
+    Mix_Quit();
+    IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    Mix_CloseAudio();
-    IMG_Quit();
     SDL_Quit();
 }
 
 SDL_Renderer* Game::GetRenderer() const {
     return renderer;
+}
+
+State& Game::GetState() const {
+    return *state;
 }
 
 void Game::Run() {

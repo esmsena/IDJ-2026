@@ -7,10 +7,13 @@
 #include "Vec2.h"
 #include "Zombie.h"
 
-State::State()
-    : music(new Music("audio/BGM.wav")),
-      quitRequested(false) {
-    music->Play(-1);
+State::State() : music(), quitRequested(false) {
+    LoadAssets();
+}
+
+void State::LoadAssets() {
+    music.Open("audio/BGM.wav");
+    music.Play(-1);
 
     auto* background = new GameObject();
     background->AddComponent(new SpriteRenderer(*background, "img/Background.png"));
@@ -42,7 +45,6 @@ State::State()
 
 State::~State() {
     objectArray.clear();
-    delete music;
 }
 
 void State::Update(float dt) {
