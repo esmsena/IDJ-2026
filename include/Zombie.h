@@ -6,7 +6,7 @@
 
 class Zombie : public Component {
 public:
-    explicit Zombie(GameObject& associated);
+    explicit Zombie(GameObject& associated, int hitpoints = 100);
 
     void Damage(int damage);
     void Update(float dt) override;

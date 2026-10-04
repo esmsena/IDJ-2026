@@ -5,8 +5,8 @@
 #include "GameObject.h"
 #include "SpriteRenderer.h"
 
-Zombie::Zombie(GameObject& associated)
-    : Component(associated), hitpoints(100), deathSound("audio/Dead.wav") {
+Zombie::Zombie(GameObject& associated, int hitpoints)
+    : Component(associated), hitpoints(hitpoints), deathSound("audio/Dead.wav") {
     auto* renderer = new SpriteRenderer(associated, "img/Enemy.png", 3, 2);
     associated.AddComponent(renderer);
 

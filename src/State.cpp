@@ -4,6 +4,7 @@
 #include "SpriteRenderer.h"
 #include "TileMap.h"
 #include "TileSet.h"
+#include "Vec2.h"
 #include "Zombie.h"
 
 State::State()
@@ -20,11 +21,23 @@ State::State()
                                   new TileSet(64, 64, "img/Tileset.png")));
     AddObject(map);
 
-    auto* zombie = new GameObject();
-    zombie->AddComponent(new Zombie(*zombie));
-    zombie->box.x = 600.0f;
-    zombie->box.y = 450.0f;
-    AddObject(zombie);
+    const struct {
+        Vec2 position;
+        int hitpoints;
+    } zombies[] = {
+        {{600.0f, 450.0f}, 100},
+        {{200.0f, 250.0f}, 150},
+        {{950.0f, 200.0f}, 200},
+        {{350.0f, 700.0f}, 250},
+        {{900.0f, 680.0f}, 300},
+    };
+    for (const auto& data : zombies) {
+        auto* zombie = new GameObject();
+        zombie->AddComponent(new Zombie(*zombie, data.hitpoints));
+        zombie->box.x = data.position.x;
+        zombie->box.y = data.position.y;
+        AddObject(zombie);
+    }
 }
 
 State::~State() {
