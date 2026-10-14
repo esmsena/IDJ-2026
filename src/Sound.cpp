@@ -24,7 +24,8 @@ void Sound::Play(int times) {
 }
 
 void Sound::Stop() {
-    if (chunk != nullptr && channel != -1) {
+    if (chunk != nullptr && channel != -1 &&
+        Mix_Playing(channel) != 0 && Mix_GetChunk(channel) == chunk) {
         Mix_HaltChannel(channel);
         channel = -1;
     }

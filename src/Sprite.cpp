@@ -1,11 +1,12 @@
 #include "Sprite.h"
 
+#include "Camera.h"
 #include "Game.h"
 #include "Resources.h"
 
 Sprite::Sprite()
-    : texture(nullptr), width(0), height(0), clipRect({0, 0, 0, 0}),
-      frameCountW(1), frameCountH(1) {}
+    : cameraFollower(false), texture(nullptr), width(0), height(0),
+      clipRect({0, 0, 0, 0}), frameCountW(1), frameCountH(1) {}
 
 Sprite::Sprite(const std::string& file, int frameCountW, int frameCountH)
     : Sprite() {
@@ -33,6 +34,10 @@ void Sprite::Render(int x, int y, int w, int h) const {
     }
 
     SDL_Rect destination = {x, y, w, h};
+    if (!cameraFollower) {
+        destination.x -= static_cast<int>(Camera::pos.x);
+        destination.y -= static_cast<int>(Camera::pos.y);
+    }
     SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &destination);
 }
 

@@ -24,6 +24,8 @@ public:
     int GetDepth() const;
 
 private:
+    float ParallaxFactor(int layer) const;
+
     std::vector<int> tileMatrix;
     std::unique_ptr<TileSet> tileSet;
     int mapWidth;

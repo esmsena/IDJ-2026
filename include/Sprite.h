@@ -20,6 +20,8 @@ public:
     int GetHeight() const;
     bool IsOpen() const;
 
+    bool cameraFollower;
+
     Sprite(const Sprite&) = delete;
     Sprite& operator=(const Sprite&) = delete;
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "InputManager.h"
 #include "State.h"
 #include "Resources.h"
 
@@ -22,7 +23,7 @@ Game& Game::GetInstance(const std::string& title, int width, int height) {
 }
 
 Game::Game(const std::string& title, int width, int height)
-    : window(nullptr), renderer(nullptr), state(nullptr) {
+    : window(nullptr), renderer(nullptr), state(nullptr), frameStart(0), dt(0.0f) {
     if (instance != nullptr) {
         throw std::logic_error("Ja existe uma instancia de Game em execucao.");
     }
@@ -62,6 +63,7 @@ Game::Game(const std::string& title, int width, int height)
     }
 
     state = new State();
+    frameStart = static_cast<int>(SDL_GetTicks());
 }
 
 Game::~Game() {
@@ -82,9 +84,21 @@ State& Game::GetState() const {
     return *state;
 }
 
+float Game::GetDeltaTime() const {
+    return dt;
+}
+
+void Game::CalculateDeltaTime() {
+    const int now = static_cast<int>(SDL_GetTicks());
+    dt = static_cast<float>(now - frameStart) / 1000.0f;
+    frameStart = now;
+}
+
 void Game::Run() {
     while (!state->QuitRequested()) {
-        state->Update(1.0f / 30.0f);
+        CalculateDeltaTime();
+        InputManager::GetInstance().Update();
+        state->Update(dt);
         SDL_RenderClear(renderer);
         state->Render();
         SDL_RenderPresent(renderer);

@@ -1,10 +1,11 @@
 #include "State.h"
 
+#include "Camera.h"
 #include "GameObject.h"
+#include "InputManager.h"
 #include "SpriteRenderer.h"
 #include "TileMap.h"
 #include "TileSet.h"
-#include "Vec2.h"
 #include "Zombie.h"
 
 State::State() : music(), quitRequested(false) {
@@ -16,31 +17,15 @@ void State::LoadAssets() {
     music.Play(-1);
 
     auto* background = new GameObject();
-    background->AddComponent(new SpriteRenderer(*background, "img/Background.png"));
+    auto* backgroundRenderer = new SpriteRenderer(*background, "img/Background.png");
+    backgroundRenderer->SetCameraFollower(true);
+    background->AddComponent(backgroundRenderer);
     AddObject(background);
 
     auto* map = new GameObject();
     map->AddComponent(new TileMap(*map, "map/map.txt",
                                   new TileSet(64, 64, "img/Tileset.png")));
     AddObject(map);
-
-    const struct {
-        Vec2 position;
-        int hitpoints;
-    } zombies[] = {
-        {{600.0f, 450.0f}, 100},
-        {{200.0f, 250.0f}, 150},
-        {{950.0f, 200.0f}, 200},
-        {{350.0f, 700.0f}, 250},
-        {{900.0f, 680.0f}, 300},
-    };
-    for (const auto& data : zombies) {
-        auto* zombie = new GameObject();
-        zombie->AddComponent(new Zombie(*zombie, data.hitpoints));
-        zombie->box.x = data.position.x;
-        zombie->box.y = data.position.y;
-        AddObject(zombie);
-    }
 }
 
 State::~State() {
@@ -48,11 +33,19 @@ State::~State() {
 }
 
 void State::Update(float dt) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event) != 0) {
-        if (event.type == SDL_QUIT) {
-            quitRequested = true;
-        }
+    InputManager& input = InputManager::GetInstance();
+    if (input.KeyPress(ESCAPE_KEY) || input.QuitRequested()) {
+        quitRequested = true;
+    }
+
+    Camera::Update(dt);
+
+    if (input.KeyPress(SPACE_KEY)) {
+        auto* zombie = new GameObject();
+        zombie->AddComponent(new Zombie(*zombie));
+        zombie->box.x = input.GetMouseX() + Camera::pos.x - zombie->box.w / 2.0f;
+        zombie->box.y = input.GetMouseY() + Camera::pos.y - zombie->box.h / 2.0f;
+        AddObject(zombie);
     }
 
     for (std::size_t index = 0; index < objectArray.size(); ++index) {

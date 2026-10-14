@@ -15,6 +15,7 @@ public:
 
     SDL_Renderer* GetRenderer() const;
     State& GetState() const;
+    float GetDeltaTime() const;
     void Run();
 
     Game(const Game&) = delete;
@@ -22,11 +23,14 @@ public:
 
 private:
     Game(const std::string& title, int width, int height);
+    void CalculateDeltaTime();
 
     static Game* instance;
     SDL_Window* window;
     SDL_Renderer* renderer;
     State* state;
+    int frameStart;
+    float dt;
 };
 
 #endif
