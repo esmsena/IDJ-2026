@@ -5,7 +5,7 @@
 
 Animator::Animator(GameObject& associated)
     : Component(associated), frameStart(0), frameEnd(0), frameTime(0.0f),
-      currentFrame(0), timeElapsed(0.0f) {}
+      currentFrame(0), timeElapsed(0.0f), flip(SDL_FLIP_NONE) {}
 
 void Animator::Update(float dt) {
     if (frameTime == 0.0f) {
@@ -21,7 +21,7 @@ void Animator::Update(float dt) {
         }
 
         if (SpriteRenderer* renderer = associated.GetComponent<SpriteRenderer>()) {
-            renderer->SetFrame(currentFrame);
+            renderer->SetFrame(currentFrame, flip);
         }
     }
 }
@@ -29,6 +29,10 @@ void Animator::Update(float dt) {
 void Animator::Render() {}
 
 void Animator::SetAnimation(const std::string& name) {
+    if (name == current) {
+        return;
+    }
+
     const auto iterator = animations.find(name);
     if (iterator == animations.end()) {
         return;
@@ -37,11 +41,13 @@ void Animator::SetAnimation(const std::string& name) {
     frameStart = iterator->second.frameStart;
     frameEnd = iterator->second.frameEnd;
     frameTime = iterator->second.frameTime;
+    flip = iterator->second.flip;
+    current = name;
     currentFrame = frameStart;
     timeElapsed = 0.0f;
 
     if (SpriteRenderer* renderer = associated.GetComponent<SpriteRenderer>()) {
-        renderer->SetFrame(currentFrame);
+        renderer->SetFrame(currentFrame, flip);
     }
 }
 

@@ -6,7 +6,8 @@
 
 Sprite::Sprite()
     : cameraFollower(false), texture(nullptr), width(0), height(0),
-      clipRect({0, 0, 0, 0}), frameCountW(1), frameCountH(1) {}
+      clipRect({0, 0, 0, 0}), frameCountW(1), frameCountH(1),
+      flip(SDL_FLIP_NONE), scale(1.0f, 1.0f) {}
 
 Sprite::Sprite(const std::string& file, int frameCountW, int frameCountH)
     : Sprite() {
@@ -28,7 +29,8 @@ void Sprite::Open(const std::string& file) {
 
 Sprite::~Sprite() = default;
 
-void Sprite::Render(int x, int y, int w, int h) const {
+// w e h ja chegam ajustados para a escala: vem da box, que SetScale mantem atualizada.
+void Sprite::Render(int x, int y, int w, int h, float angle) const {
     if (texture == nullptr) {
         return;
     }
@@ -38,7 +40,8 @@ void Sprite::Render(int x, int y, int w, int h) const {
         destination.x -= static_cast<int>(Camera::pos.x);
         destination.y -= static_cast<int>(Camera::pos.y);
     }
-    SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &destination);
+    SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), texture, &clipRect, &destination,
+                     angle, nullptr, flip);
 }
 
 void Sprite::SetClip(int x, int y, int w, int h) {
@@ -74,12 +77,25 @@ void Sprite::SetFrameCount(int newFrameCountW, int newFrameCountH) {
     }
 }
 
+void Sprite::SetScale(float scaleX, float scaleY) {
+    if (scaleX != 0.0f) scale.x = scaleX;
+    if (scaleY != 0.0f) scale.y = scaleY;
+}
+
+Vec2 Sprite::GetScale() const {
+    return scale;
+}
+
+void Sprite::SetFlip(SDL_RendererFlip newFlip) {
+    flip = newFlip;
+}
+
 int Sprite::GetWidth() const {
-    return width / frameCountW;
+    return static_cast<int>(width / frameCountW * scale.x);
 }
 
 int Sprite::GetHeight() const {
-    return height / frameCountH;
+    return static_cast<int>(height / frameCountH * scale.y);
 }
 
 bool Sprite::IsOpen() const {

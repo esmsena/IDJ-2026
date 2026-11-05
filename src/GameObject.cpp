@@ -1,12 +1,20 @@
 #include "GameObject.h"
 
-GameObject::GameObject() : box(), isDead(false) {}
+GameObject::GameObject()
+    : box(), angleDeg(0.0), started(false), z(0), ySortOffset(0.0f), isDead(false) {}
 
 GameObject::~GameObject() {
     for (auto iterator = components.rbegin(); iterator != components.rend(); ++iterator) {
         delete *iterator;
     }
     components.clear();
+}
+
+void GameObject::Start() {
+    for (std::size_t index = 0; index < components.size(); ++index) {
+        components[index]->Start();
+    }
+    started = true;
 }
 
 void GameObject::Update(float dt) {
@@ -21,6 +29,10 @@ void GameObject::Render() {
     }
 }
 
+float GameObject::GetSortY() const {
+    return box.y + box.h + ySortOffset;
+}
+
 bool GameObject::IsDead() const {
     return isDead;
 }
@@ -31,6 +43,9 @@ void GameObject::RequestDelete() {
 
 void GameObject::AddComponent(Component* component) {
     components.emplace_back(component);
+    if (started) {
+        component->Start();
+    }
 }
 
 void GameObject::RemoveComponent(Component* component) {

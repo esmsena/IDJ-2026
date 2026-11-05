@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+const float RAD_TO_DEG = 180.0f / 3.14159265f;
+
 class Vec2 {
 public:
     float x;

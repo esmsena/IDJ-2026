@@ -25,8 +25,17 @@ void SpriteRenderer::SetFrameCount(int frameCountW, int frameCountH) {
     associated.box.h = static_cast<float>(sprite.GetHeight());
 }
 
-void SpriteRenderer::SetFrame(int frame) {
+void SpriteRenderer::SetFrame(int frame, SDL_RendererFlip flip) {
     sprite.SetFrame(frame);
+    sprite.SetFlip(flip);
+}
+
+void SpriteRenderer::SetScale(float scaleX, float scaleY) {
+    const Vec2 center = associated.box.GetCenter();
+    sprite.SetScale(scaleX, scaleY);
+    associated.box.w = static_cast<float>(sprite.GetWidth());
+    associated.box.h = static_cast<float>(sprite.GetHeight());
+    associated.box.SetCenter(center);
 }
 
 void SpriteRenderer::SetCameraFollower(bool cameraFollower) {
@@ -37,5 +46,6 @@ void SpriteRenderer::Update(float) {}
 
 void SpriteRenderer::Render() {
     sprite.Render(static_cast<int>(associated.box.x), static_cast<int>(associated.box.y),
-                  static_cast<int>(associated.box.w), static_cast<int>(associated.box.h));
+                  static_cast<int>(associated.box.w), static_cast<int>(associated.box.h),
+                  static_cast<float>(associated.angleDeg));
 }

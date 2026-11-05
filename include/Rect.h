@@ -16,6 +16,10 @@ public:
     Rect operator+(const Vec2& vector) const { return Rect(x + vector.x, y + vector.y, w, h); }
     Rect& operator+=(const Vec2& vector) { x += vector.x; y += vector.y; return *this; }
     Vec2 GetCenter() const { return Vec2(x + w / 2.0f, y + h / 2.0f); }
+    void SetCenter(const Vec2& center) {
+        x = center.x - w / 2.0f;
+        y = center.y - h / 2.0f;
+    }
     float Distance(const Rect& other) const { return GetCenter().Distance(other.GetCenter()); }
     bool Contains(const Vec2& point) const {
         return point.x >= x && point.x <= x + w && point.y >= y && point.y <= y + h;

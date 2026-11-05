@@ -8,6 +8,7 @@ public:
     explicit Component(GameObject& associated) : associated(associated) {}
     virtual ~Component() = default;
 
+    virtual void Start() {}
     virtual void Update(float dt) = 0;
     virtual void Render() = 0;
 

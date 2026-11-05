@@ -12,6 +12,7 @@ public:
     GameObject();
     ~GameObject();
 
+    void Start();
     void Update(float dt);
     void Render();
     bool IsDead() const;
@@ -29,7 +30,13 @@ public:
         return nullptr;
     }
 
+    float GetSortY() const;
+
     Rect box;
+    double angleDeg;
+    bool started;
+    int z;
+    float ySortOffset;
 
 private:
     std::vector<Component*> components;
